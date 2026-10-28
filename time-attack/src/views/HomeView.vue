@@ -1,9 +1,11 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import GameBoard from '@/components/GameBoard.vue';
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+    <GameBoard></GameBoard>
 </template>
+
+<style>
+
+</style>
