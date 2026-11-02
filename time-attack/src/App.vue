@@ -11,7 +11,7 @@ import { RouterLink, RouterView } from 'vue-router'
 
       <nav>
         <RouterLink to="/">Game Board</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        
       </nav>
     </div>
   </header>
