@@ -4,6 +4,9 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import cmpResultTable from '@/components/cmpResultTable.vue';
 import { useGameStore } from '@/stores/game'
 import cmpScoreBoard from '@/components/cmpScoreBoard.vue';
+import { socket } from '@/services/socket'
+import cmpRoomForm from '@/components/cmpRoomForm.vue';
+
 
 const store = useGameStore()
 const nom = ref('')
@@ -20,7 +23,12 @@ const tempsObjectiu = {
 const jugant = ref(false)
 const resultats = ref([])
 
-let tempsInici = 0
+let tempsInici = 0;
+
+function connectat() {
+  console.log('Connectat al servidor!', socket.id)
+}
+
 
 function iniciarPartida(){
   tempsInici = performance.now();
@@ -82,12 +90,41 @@ function entrar() {
   store.guardarNom(nom.value.trim())
 }
 
+function rebreEstat(dades) {
+  store.actualitzarSala(dades)
+}
+
+function entrarSala(codi) {
+  if (!socket.connected) {
+    alert('No estàs connectat al servidor')
+    return
+  }
+
+  socket.emit('room:join', {
+    nickname: store.nomJugador,
+    roomCode: codi
+  }, (resposta) => {
+
+    if (resposta.ok) {
+      store.playerId = resposta.playerId
+    } else {
+      alert(resposta.error)
+    }
+
+  })
+}
+
+
 onMounted(() => {
   window.addEventListener('keydown', comprobarTecla);
+  socket.on('connect', connectat)
+  socket.connect()
 });
 
 onUnmounted(() => {
   window.removeEventListener('keydown', comprobarTecla);
+  socket.off('connect', connectat)
+  socket.disconnect()
 });
 </script>
 
@@ -135,10 +172,15 @@ onUnmounted(() => {
         </form>
       </div>
 
+      <cmpRoomForm
+    v-else-if="!store.roomCode"
+  @entrar="entrarSala"
+/>
+
 
       <!-- HISTORIAL DE PARTIDAS -->
       <div
-        v-if="store.nomJugador"
+        v-else-if="store.nomJugador"
         class="card border-0 shadow-sm rounded-4 mb-4 mx-auto"
         style="max-width: 650px;">
 
