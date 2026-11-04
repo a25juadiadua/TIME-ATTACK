@@ -60,7 +60,7 @@ function premuda(tecla){
       jugant.value = false;
 
       const errorTotal = resultats.value.reduce(
-        (total, r) => total + r.error, 0)
+        (total, r) => total + Math.abs(r.error), 0)
 
       store.guardarPartida(Number(errorTotal.toFixed(2)))
     }
@@ -135,22 +135,38 @@ onUnmounted(() => {
         </form>
       </div>
 
+
       <!-- HISTORIAL DE PARTIDAS -->
-<div
-  v-if="store.nomJugador && store.partides.length >= 1"
-  class="card border-0 shadow-sm rounded-4 mb-4 mx-auto" style= "max-width: 650px;">
+      <div
+        v-if="store.nomJugador"
+        class="card border-0 shadow-sm rounded-4 mb-4 mx-auto"
+        style="max-width: 650px;">
 
-  <div class="card-body p-4">
-    <div class="d-flex align-items-center gap-2 mb-3">
-      <i class="bi bi-clock-history text-primary fs-4"></i>
-      <h5 class="fw-bold mb-0">Historial de partidas</h5>
-    </div>
+        <div class="card-body p-4">
 
-    <cmpScoreBoard />
-  </div>
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="bi bi-clock-history text-primary fs-4"></i>
+            <h5 class="fw-bold mb-0">Historial de partidas</h5>
+          </div>
 
-</div>
+          <div v-if="store.partides.length === 0" class="text-center py-4">
 
+            <i class="bi bi-controller text-secondary" style="font-size: 2.5rem;"></i>
+
+            <p class="fw-semibold text-secondary mt-3 mb-1">
+              Todavía no hay partidas
+            </p>
+
+            <p class="text-secondary small mb-0">
+              ¡Completa tu primera partida para ver tus resultados aquí!
+            </p>
+
+          </div>
+
+          <cmpScoreBoard v-else />
+
+        </div>
+      </div>
       <!-- TARJETA DEL JUEGO -->
       <div
         v-if="store.nomJugador && resultats.length !== tecles.length"

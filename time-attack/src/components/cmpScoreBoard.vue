@@ -1,7 +1,22 @@
 <script setup>
 import { useGameStore } from '@/stores/game'
+import {  computed } from 'vue'
 
 const store = useGameStore()
+
+const millorMarca = computed(() => {
+  if (store.partides.length === 0) return null
+
+  let millor = store.partides[0].errorTotal
+
+  for (let partida of store.partides) {
+    if (partida.errorTotal < millor) {
+      millor = partida.errorTotal
+    }
+  }
+
+  return millor
+})
 </script>
 
 <template>
@@ -60,6 +75,39 @@ const store = useGameStore()
           </tbody>
 
         </table>
+        <button
+  v-if="store.partides.length > 0"
+  @click="store.esborrarPartides()"
+  class="btn btn-outline-danger rounded-3 mt-3">
+  <i class="bi bi-trash me-2"></i>
+  Borrar historial
+</button>
+
+          <!-- MEJOR MARCA -->
+        <div
+          v-if="millorMarca !== null"
+          class="d-flex align-items-center justify-content-between bg-warning-subtle border border-warning-subtle rounded-4 p-3 mt-4">
+
+          <div class="d-flex align-items-center gap-3">
+            <div class="bg-warning text-dark rounded-3 p-3">
+              <i class="bi bi-trophy-fill fs-3"></i>
+            </div>
+
+            <div>
+              <h6 class="fw-bold mb-1">Mejor marca</h6>
+              <p class="text-secondary small mb-0">
+                Tu mejor resultado hasta ahora
+              </p>
+            </div>
+          </div>
+
+          <div class="text-end">
+            <h3 class="fw-bold text-dark mb-0">
+              {{ millorMarca.toFixed(2) }} s
+            </h3>
+          </div>
+
+        </div>
       </div>
 
     </div>
